@@ -1,7 +1,7 @@
 // Hooks
 import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 // Icons
 import { BiBed, BiBath, BiArea } from "react-icons/bi";
 // Constants
@@ -13,7 +13,6 @@ import { IUserContext, UserContext } from "../context/User";
 // Components
 import FormField from "../components/FormField";
 //Models
-import { IHouse } from "../models/House";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 interface IContactAgentData {

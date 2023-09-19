@@ -27,7 +27,7 @@ interface ISignUpData {
 const SignUp: React.FC<ISignUpProps> = (props) => {
   // Context
   const { setRegisteredUsers } = useContext(UserContext) as IUserContext;
-  const [userInfo, setUserInfo] = useLocalStorage({ key: "USER" });
+  const [_, setUserInfo] = useLocalStorage({ key: "USER" });
 
   // Form
   const {

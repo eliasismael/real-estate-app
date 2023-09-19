@@ -1,6 +1,6 @@
 // Hooks
 import { useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { BiBed, BiBath, BiArea } from "react-icons/bi";
 // Utils
 import { getPriceFromNumber } from "../utils/getPriceFromNumber";
@@ -8,8 +8,6 @@ import { getPriceFromNumber } from "../utils/getPriceFromNumber";
 import { IUserContext, UserContext } from "../context/User";
 // import { IHouse } from "../models/House";
 const UserProfile = (): JSX.Element => {
-  const { userId } = useParams();
-
   const { currentUser, housesInterestedIn } = useContext(
     UserContext
   ) as IUserContext;
