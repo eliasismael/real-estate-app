@@ -2,7 +2,6 @@
 import { useState, useEffect, createContext, ReactNode } from "react";
 // Constants
 import { housesData } from "../../constants/data";
-
 //Models
 import { IHouse } from "../../models/House";
 

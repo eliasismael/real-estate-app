@@ -9,7 +9,7 @@ interface IHouseProps {
   house: IHouse;
 }
 
-const House = (props: IHouseProps): JSX.Element => {
+const House: React.FC<IHouseProps> = (props): JSX.Element => {
   const { image, type, country, address, bedrooms, bathrooms, surface, price } =
     props.house;
 
@@ -17,9 +17,9 @@ const House = (props: IHouseProps): JSX.Element => {
     // Card
     <div
       className="bg-white shadow-1 p-5 rounded-lg
-    rounded-tl-[90px] rounded-br-[90px] border-gray-300 border-b-8 border-r-8 border-t-0 w-full max-w-[352px] mx-auto
-    cursor-pointer hover:shadow-2xl transition
-    "
+    rounded-tl-[90px] rounded-br-[90px] border-gray-300 border-b-8 border-r-8
+    border-t-0 w-full max-w-[352px] mx-auto
+    cursor-pointer hover:shadow-2xl transition"
     >
       <img src={image} alt="house" className="mb-4 flex gap-x-2 text-sm" />
 

@@ -1,15 +1,15 @@
 // Hooks
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 // Component
 import Modal from "./Modal";
 // Context
 import { IUserContext, UserContext } from "../context/User";
 // Models
 import { IUser } from "../models/User";
-
+// Components
 import FormField from "./FormField";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 
 interface ISignUpProps {
   isSignUpVisible: boolean;
@@ -24,10 +24,9 @@ interface ISignUpData {
   confirmedPassword: string;
 }
 
-const SignUp = (props: ISignUpProps): JSX.Element | null => {
+const SignUp: React.FC<ISignUpProps> = (props) => {
   // Context
   const { setRegisteredUsers } = useContext(UserContext) as IUserContext;
-
   const [userInfo, setUserInfo] = useLocalStorage({ key: "USER" });
 
   // Form
@@ -38,9 +37,8 @@ const SignUp = (props: ISignUpProps): JSX.Element | null => {
   } = useForm<ISignUpData>();
 
   const onSubmit = (data: ISignUpData) => {
-    if (data.password !== data.confirmedPassword) {
-      return alert("Password don't match");
-    }
+    const passwordsMatch = data.password === data.confirmedPassword;
+    if (!passwordsMatch) return alert("Password don't match");
 
     const newUser: IUser = {
       name: data.name,
@@ -49,10 +47,9 @@ const SignUp = (props: ISignUpProps): JSX.Element | null => {
       password: data.password,
     };
 
+    // Set to localStorage
     setUserInfo(newUser);
-
     setRegisteredUsers((prevState) => [...prevState, newUser]);
-    // Close modal
     props.setIsSignUpVisible(false);
   };
 

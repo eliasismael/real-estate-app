@@ -11,7 +11,7 @@ import { ImSpinner2 } from "react-icons/im";
 // Models
 import { IHouse } from "../models/House";
 
-const HouseList = (): JSX.Element => {
+const HouseList: React.FC = () => {
   const { houses, loading } = useContext(HouseContext) as IHouseContext;
 
   if (loading) {

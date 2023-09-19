@@ -1,11 +1,10 @@
 // Hooks
 import { useState, useEffect, createContext, ReactNode } from "react";
+// Models
 import { IUser } from "../../models/User";
 import { IHouse } from "../../models/House";
 
 export interface IUserContext {
-  loged: boolean;
-  setLoged: React.Dispatch<React.SetStateAction<boolean>>;
   registeredUsers: IUser[];
   setRegisteredUsers: React.Dispatch<React.SetStateAction<IUser[]>>;
   currentUser: IUser | null;
@@ -24,9 +23,18 @@ export const UserContext = createContext<IUserContext | undefined>(undefined);
 const UserContextProvider = (props: IUserContextProps) => {
   const { children } = props;
 
+  // To match email and password
   const [registeredUsers, setRegisteredUsers] = useState<IUser[]>([]);
-  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
-  const [loged, setLoged] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState<IUser | null>(() => {
+    // Look for user logGed
+    const user = localStorage.getItem("USER");
+    if (user) {
+      return JSON.parse(user);
+    }
+    return null;
+  });
+
   const [housesInterestedIn, setHousesInterestIn] = useState<IHouse[]>([]);
 
   useEffect(() => {
@@ -35,8 +43,6 @@ const UserContextProvider = (props: IUserContextProps) => {
       const parsedUser = JSON.parse(user);
       setCurrentUser(parsedUser);
     }
-
-    console.log("user from lc:", JSON.parse(user as string));
   }, []);
 
   const value = {
@@ -44,8 +50,6 @@ const UserContextProvider = (props: IUserContextProps) => {
     setCurrentUser,
     registeredUsers,
     setRegisteredUsers,
-    loged,
-    setLoged,
     housesInterestedIn,
     setHousesInterestIn,
   };

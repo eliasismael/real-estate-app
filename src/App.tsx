@@ -16,7 +16,6 @@ function App() {
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
-
       <Footer />
     </div>
   );

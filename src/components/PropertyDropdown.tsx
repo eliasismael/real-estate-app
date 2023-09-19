@@ -6,7 +6,7 @@ import { HouseContext, IHouseContext } from "../context/House";
 import { RiHome5Line, RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { Menu } from "@headlessui/react";
 
-const PropertyDropdown = (): JSX.Element => {
+const PropertyDropdown: React.FC = () => {
   const { property, setProperty, properties } = useContext(
     HouseContext
   ) as IHouseContext;

@@ -12,7 +12,7 @@ import {
 } from "react-icons/ri";
 import { Menu } from "@headlessui/react";
 
-const PriceRangeDropdown = (): JSX.Element => {
+const PriceRangeDropdown: React.FC = () => {
   const { priceRange, setPriceRange } = useContext(
     HouseContext
   ) as IHouseContext;

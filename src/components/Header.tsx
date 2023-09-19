@@ -1,6 +1,5 @@
 // Hooks
 import { useState, useContext } from "react";
-import { useAuth } from "../hooks/useAuth";
 // Elements
 import { Link } from "react-router-dom";
 // Assets
@@ -14,25 +13,34 @@ import { IUserContext, UserContext } from "../context/User";
 import { AiOutlineUser, AiOutlineMenu } from "react-icons/ai";
 import { Menu } from "@headlessui/react";
 
-const Header = (): JSX.Element => {
-  const { currentUser } = useContext(UserContext) as IUserContext;
+const Header: React.FC = () => {
+  const { currentUser, setCurrentUser } = useContext(
+    UserContext
+  ) as IUserContext;
 
   // Modals
   const [isLogInVisible, setIsLogInVisible] = useState(false);
   const [isSignUpVisible, setIsSignUpVisible] = useState(false);
 
+  const logout = () => {
+    localStorage.removeItem("USER");
+    setCurrentUser(null);
+  };
+
   const menuItems = [
     { title: "Profile", link: "/profile" },
-    { title: "My Houses", link: "/my-houses" },
-    { title: "Log out", link: "/" },
+    { title: "Log out" },
   ];
 
   return (
     <header className="py-6 mb-12 border-b border-black bg-white shadow-1">
       {/* Logo */}
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center  ">
         <Link to="/">
-          <img src={Icon} alt="logo" className="w-12 h-auto" />
+          <div className="flex items-center gap-4">
+            <img src={Icon} alt="logo" className="w-12 h-auto " />
+            <h1 className="text-4xl">Dream House</h1>
+          </div>
         </Link>
 
         {/* MODALS */}
@@ -70,7 +78,11 @@ const Header = (): JSX.Element => {
                       key={i}
                       className="cursor-pointer text-black hover:text-blue-600 transition text-end"
                     >
-                      <Link to={item.link}>{item.title}</Link>
+                      {item.link ? (
+                        <Link to={item.link}>{item.title}</Link>
+                      ) : (
+                        <li onClick={logout}>{item.title}</li>
+                      )}
                     </Menu.Item>
                   );
                 })}
@@ -78,8 +90,7 @@ const Header = (): JSX.Element => {
             </Menu>
           </div>
         ) : (
-          ///// User unlogged
-          // Buttons
+          //User unlogged
           <div className="flex items-center gap-6">
             <button
               onClick={() => setIsLogInVisible(true)}

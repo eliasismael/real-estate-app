@@ -9,20 +9,13 @@ interface IFormInputProps {
   errors: FieldErrors<any>;
 }
 
-const FormField = ({
-  name,
-  type,
-  placeholder,
-  register,
-  defaultValue,
-  errors,
-}: IFormInputProps): JSX.Element => {
+const FormField: React.FC<IFormInputProps> = (props) => {
+  const { name, type, placeholder, register, defaultValue, errors } = props;
   return (
     <>
       <input
         id={name}
         type={type}
-        // name={name}
         defaultValue={defaultValue}
         placeholder={placeholder}
         {...register(name, { required: true })}

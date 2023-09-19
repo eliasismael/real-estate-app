@@ -1,4 +1,4 @@
-const Footer = (): JSX.Element => {
+const Footer: React.FC = () => {
   return (
     <footer className="bg-black py-8 text-center text-white">
       <div className="container mx-auto">

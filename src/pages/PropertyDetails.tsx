@@ -1,7 +1,6 @@
 // Hooks
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { SubmitHandler, useForm } from "react-hook-form";
 // Icons
 import { BiBed, BiBath, BiArea } from "react-icons/bi";
@@ -15,6 +14,7 @@ import { IUserContext, UserContext } from "../context/User";
 import FormField from "../components/FormField";
 //Models
 import { IHouse } from "../models/House";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 interface IContactAgentData {
   name: string;
@@ -24,6 +24,8 @@ interface IContactAgentData {
 }
 
 const PropertyDetails = (): JSX.Element => {
+  const [isMessageSent, setIsMessageSent] = useState(false);
+
   // Context
   const { currentUser, housesInterestedIn, setHousesInterestIn } = useContext(
     UserContext
@@ -34,12 +36,16 @@ const PropertyDetails = (): JSX.Element => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IContactAgentData>();
 
   const { id } = useParams();
-
   if (!id) {
-    return <h1>Error 404</h1>;
+    return (
+      <div className="text-center text-3xl text-gray-400 mt-48">
+        No houses matched
+      </div>
+    );
   }
 
   // Remove the colon from the id
@@ -48,7 +54,7 @@ const PropertyDetails = (): JSX.Element => {
 
   if (!house) {
     return (
-      <div className="text-center text-3xl text-gray-400 mt-48">NO HOUSE</div>
+      <div className="text-center text-3xl text-gray-400 mt-48">No house</div>
     );
   }
 
@@ -58,8 +64,12 @@ const PropertyDetails = (): JSX.Element => {
     );
   });
 
-  const onSubmit: SubmitHandler<IContactAgentData> = (data) =>
-    console.log(data);
+  const onSubmit = () => {
+    if (isMessageSent) return;
+
+    reset();
+    setIsMessageSent(true);
+  };
 
   const handleInterested = () => {
     const isInterested = housesInterestedIn.some(
@@ -69,41 +79,49 @@ const PropertyDetails = (): JSX.Element => {
     if (!isInterested) {
       setHousesInterestIn((prevState) => [...prevState, house]);
     } else {
-      setHousesInterestIn((prevState) => {
-        return prevState.filter(
-          (houseInterestedIn: IHouse) => houseInterestedIn.id !== house.id
-        );
-      });
+      setHousesInterestIn((prevState) =>
+        prevState.filter(
+          (houseInterestedIn) => houseInterestedIn.id !== house.id
+        )
+      );
     }
 
     setIsInterested((prevState) => !prevState);
   };
 
-  useEffect(() => {
-    console.log(housesInterestedIn);
-  }, [isInterested]);
-
   return (
     <section>
       <div className="container mx-auto mb-14">
-        {/* Encabezado */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        {/* Main info */}
+        <div className="flex flex-col py-2 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-2xl font-semibold">{house.name}</h2>
-            <h3 className="text-lg mb-4">{house.address}</h3>
+            <h3 className="text-lg mb-2">{house.address}</h3>
           </div>
 
-          <div className=" mb-4 lg:mb-0 flex gap-x-2 text-sm">
-            <div className="bg-blue-800 text-white px-3 rounded-full">
+          <div className=" mb-4 lg:mb-0 flex gap-x-2 text-sm items-center">
+            <div className="bg-blue-800 text-white px-3 h-6 rounded-full flex items-center justify-center">
               {house.type}
             </div>
-            <div className="bg-blue-600 text-white px-3 rounded-full">
+            <div className="bg-blue-600 text-white px-3 h-6 rounded-full flex items-center">
               {house.country}
             </div>
-          </div>
 
-          <div className="text-3xl font-semibold text-black">
-            {getPriceFromNumber(house.price)}
+            {currentUser && (
+              <>
+                {!isInterested ? (
+                  <AiOutlineStar
+                    onClick={handleInterested}
+                    className="text-yellow-500 text-4xl cursor-pointer"
+                  />
+                ) : (
+                  <AiFillStar
+                    onClick={handleInterested}
+                    className="text-yellow-500 text-4xl cursor-pointer"
+                  />
+                )}
+              </>
+            )}
           </div>
         </div>
 
@@ -118,7 +136,7 @@ const PropertyDetails = (): JSX.Element => {
                 className="rounded-lg"
               />
             </div>
-            <div className="flex gap-x-6 text-blue-600 mb-6 border">
+            <div className="flex items-center gap-x-6 text-blue-600 mb-6">
               <div className="flex gap-x-2 items-center">
                 <BiBed className="text-4xl" />
                 <div>{house.bedrooms}</div>
@@ -132,14 +150,9 @@ const PropertyDetails = (): JSX.Element => {
                 <div>{house.surface}</div>
               </div>
 
-              {currentUser && (
-                <button
-                  onClick={handleInterested}
-                  className="bg-blue-800 px-4 ml-auto rounded-lg text-white hover:bg-blue-700 transition"
-                >
-                  I'm interested {isInterested && "Se agregó"}
-                </button>
-              )}
+              <div className="text-2xl font-semibold text-black bg-gray-200 rounded-full px-6 ml-auto">
+                {getPriceFromNumber(house.price)}
+              </div>
             </div>
           </div>
 
@@ -193,13 +206,18 @@ const PropertyDetails = (): JSX.Element => {
               {errors.message && (
                 <span className="text-red-500">This field is required</span>
               )}
-
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-800 text-white rounded p-4 text-sm w-full transition"
-              >
-                Send message
-              </button>
+              {!isMessageSent ? (
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-800 text-white rounded p-4 text-sm w-full transition"
+                >
+                  Send message
+                </button>
+              ) : (
+                <div className="bg-green-500  text-white text-md text-center rounded p-4  w-full transition">
+                  Message sent succesfully!
+                </div>
+              )}
             </form>
           </div>
         </div>

@@ -1,14 +1,14 @@
 // Hooks
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 // Context
 import { UserContext, IUserContext } from "../context/User";
 // Components
 import Modal from "./Modal";
+import FormField from "./FormField";
+
 // Models
 import { IUser } from "../models/User";
-
-import FormField from "./FormField";
 
 interface ILogInProps {
   isLogInVisible: boolean;
@@ -20,33 +20,35 @@ interface ILogInData {
   password: string;
 }
 
-const LogIn = (props: ILogInProps): JSX.Element => {
-  const { registeredUsers, setLoged, setCurrentUser } = useContext(
+const LogIn: React.FC<ILogInProps> = (props): JSX.Element => {
+  const [areInvalidInputs, setAreInvalidInputs] = useState(false);
+
+  const { registeredUsers, setCurrentUser } = useContext(
     UserContext
   ) as IUserContext;
 
-  // Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ILogInData>();
 
-  const onSubmit: SubmitHandler<ILogInData> = (logInData: ILogInData) => {
+  const onSubmit: SubmitHandler<ILogInData> = (logInData) => {
     if (!registeredUsers) {
-      return alert("Email o contraseña incorrectos");
+      setAreInvalidInputs(true);
+      return;
     }
 
-    const user: IUser | undefined = registeredUsers.find(
+    const user = registeredUsers.find(
       (user: IUser) =>
         user.email === logInData.email && user.password === logInData.password
     );
 
     if (!user) {
-      return alert("Email o contraseña incorrectod");
+      setAreInvalidInputs(true);
+      return;
     }
 
-    setLoged(true);
     setCurrentUser(user);
     props.setIsLogInVisible(false);
   };
@@ -74,13 +76,20 @@ const LogIn = (props: ILogInProps): JSX.Element => {
               register={register}
               errors={errors}
             />
+
             {/* Password */}
             <FormField
               name="password"
               placeholder="Password"
+              type="password"
               register={register}
               errors={errors}
             />
+
+            {areInvalidInputs && (
+              <span className="text-red-500">Email or password invalid</span>
+            )}
+
             <button
               type="submit"
               className="bg-blue-600 text-white rounded-lg px-4 py-2 mt-4 hover:bg-blue-700 hover:shadow-1 transition"

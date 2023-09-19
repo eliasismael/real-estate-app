@@ -16,7 +16,7 @@ import { IHouse } from "../models/House";
 
 import { RiSearch2Line } from "react-icons/ri";
 
-const Search = (): JSX.Element => {
+const Search: React.FC = () => {
   const { priceRange, setHouses, country, property, setLoading } = useContext(
     HouseContext
   ) as IHouseContext;

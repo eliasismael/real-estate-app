@@ -1,6 +1,6 @@
 // Obtain 100000 (number) from "$100.000" (string)
 export const getNumberFromPrice = (strPrice: string): number => {
-  // Remove symbol and point and return it as an integer
+  // Remove "$" and "." and return it as an integer
 
   // In houseData prices have not the symbol "$", so we need to make a difference here
   if (strPrice[0] === "$") {

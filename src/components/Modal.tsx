@@ -5,7 +5,7 @@ interface IModalProps {
   children: ReactNode;
 }
 
-function Modal(props: IModalProps): React.ReactPortal {
+const Modal = (props: IModalProps): React.ReactPortal => {
   const portalNode = document.createElement("div");
 
   useEffect(() => {
@@ -14,6 +14,6 @@ function Modal(props: IModalProps): React.ReactPortal {
   }, [portalNode]);
 
   return ReactDOM.createPortal(props.children, portalNode);
-}
+};
 
 export default Modal;
