@@ -4,13 +4,15 @@ import { useState, useEffect, createContext, ReactNode } from "react";
 import { IUser } from "../../models/User";
 import { IHouse } from "../../models/House";
 
+import { USER_KEY } from "../../constants/localStorageKeys";
+
 export interface IUserContext {
   registeredUsers: IUser[];
   setRegisteredUsers: React.Dispatch<React.SetStateAction<IUser[]>>;
   currentUser: IUser | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<IUser | null>>;
-  housesInterestedIn: IHouse[];
-  setHousesInterestIn: React.Dispatch<React.SetStateAction<IHouse[]>>;
+  favHouses: IHouse[];
+  setFavHouses: React.Dispatch<React.SetStateAction<IHouse[]>>;
 }
 
 interface IUserContextProps {
@@ -21,24 +23,19 @@ interface IUserContextProps {
 export const UserContext = createContext<IUserContext | undefined>(undefined);
 
 const UserContextProvider = (props: IUserContextProps) => {
-  const { children } = props;
-
   // To match email and password
   const [registeredUsers, setRegisteredUsers] = useState<IUser[]>([]);
 
   const [currentUser, setCurrentUser] = useState<IUser | null>(() => {
     // Look for user logGed
-    const user = localStorage.getItem("USER");
-    if (user) {
-      return JSON.parse(user);
-    }
-    return null;
+    const user = localStorage.getItem(USER_KEY);
+    return user ? JSON.parse(user) : null;
   });
 
-  const [housesInterestedIn, setHousesInterestIn] = useState<IHouse[]>([]);
+  const [favHouses, setFavHouses] = useState<IHouse[]>([]);
 
   useEffect(() => {
-    const user = localStorage.getItem("USER");
+    const user = localStorage.getItem(USER_KEY);
     if (user) {
       const parsedUser = JSON.parse(user);
       setCurrentUser(parsedUser);
@@ -50,11 +47,13 @@ const UserContextProvider = (props: IUserContextProps) => {
     setCurrentUser,
     registeredUsers,
     setRegisteredUsers,
-    housesInterestedIn,
-    setHousesInterestIn,
+    favHouses,
+    setFavHouses,
   };
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={value}>{props.children}</UserContext.Provider>
+  );
 };
 
 export default UserContextProvider;

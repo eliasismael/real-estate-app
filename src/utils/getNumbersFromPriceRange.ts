@@ -10,6 +10,7 @@ export const getNumbersFromPriceRange = (
   const lowerPrice = parseInt(
     strPrice.split(" ")[0].substring(1).split(".").join("")
   );
+
   const higherPrice = parseInt(
     strPrice.split(" ")[2].substring(1).split(".").join("")
   );

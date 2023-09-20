@@ -39,7 +39,7 @@ const Header: React.FC = () => {
         <Link to="/">
           <div className="flex items-center gap-4">
             <img src={Icon} alt="logo" className="w-12 h-auto " />
-            <h1 className="text-4xl">Dream House</h1>
+            <h1 className="hidden sm:inline text-4xl ">Dream House</h1>
           </div>
         </Link>
 
@@ -62,12 +62,12 @@ const Header: React.FC = () => {
         {currentUser ? (
           <div className="flex justify-center items-center gap-4">
             <Link to={"/profile"}>
-              <AiOutlineUser className="text-3xl border rounded-lg w-14 h-14 p-3 text-blue-800 " />
+              <AiOutlineUser className="text-2xl border rounded-lg w-12 h-12 p-2 text-blue-800 " />
             </Link>
 
             <Menu as="div" className="relative">
               <Menu.Button className="border rounded-lg p-3 w-full text-left">
-                <AiOutlineMenu className="text-3xl cursor-pointer text-blue-800" />
+                <AiOutlineMenu className="text-2xl cursor-pointer text-blue-800" />
               </Menu.Button>
 
               <Menu.Items className="absolute z-10 text-[15px] p-8 space-y-6 w-36 right-0  list-none rounded-b-lg shadow-md bg-white/90">
@@ -94,13 +94,13 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-6">
             <button
               onClick={() => setIsLogInVisible(true)}
-              className="hover:text-blue-600 transition"
+              className="hover:text-blue-600 transition "
             >
               Log in
             </button>
 
             <button
-              className="bg-blue-600 hover:bg-blue-800 text-white px-4 py-3 rounded-lg transition"
+              className="bg-blue-600 hover:bg-blue-800 text-white px-4 py-1 rounded-lg transition"
               onClick={() => setIsSignUpVisible(true)}
             >
               Sign up

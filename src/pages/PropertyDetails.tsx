@@ -1,9 +1,13 @@
 // Hooks
-import { useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 // Icons
 import { BiBed, BiBath, BiArea } from "react-icons/bi";
+import {
+  BsFillArrowRightCircleFill,
+  BsFillArrowLeftCircleFill,
+} from "react-icons/bs";
 // Constants
 import { housesData } from "../constants/data";
 // Utils
@@ -22,15 +26,32 @@ interface IContactAgentData {
   message: string;
 }
 
-const PropertyDetails = (): JSX.Element => {
-  const [isMessageSent, setIsMessageSent] = useState(false);
+const Error: React.FC = () => (
+  <div className="text-center text-3xl text-gray-400 mt-48 min-h-screen">
+    No house found
+  </div>
+);
 
-  // Context
-  const { currentUser, housesInterestedIn, setHousesInterestIn } = useContext(
+const PropertyDetails: React.FC = () => {
+  ////// STATES //////
+  const [isMessageSent, setIsMessageSent] = useState(false);
+  const [isAFavHouse, setIsAFavHouse] = useState(false);
+
+  ////// CONTEXT //////
+  const { currentUser, favHouses, setFavHouses } = useContext(
     UserContext
   ) as IUserContext;
 
-  // Form
+  ////// URL & CURRENT HOUSE //////
+  const { id } = useParams();
+  if (!id) return <Error />;
+  // Remove colon from id and get an integer (":1" => 1)
+  const currentHouseId = parseInt(id.substring(1)) || 0;
+
+  const house = housesData.find((house) => house.id === currentHouseId);
+  if (!house) return <Error />;
+
+  ////// FORM //////
   const {
     register,
     handleSubmit,
@@ -38,54 +59,36 @@ const PropertyDetails = (): JSX.Element => {
     reset,
   } = useForm<IContactAgentData>();
 
-  const { id } = useParams();
-  if (!id) {
-    return (
-      <div className="text-center text-3xl text-gray-400 mt-48">
-        No houses matched
-      </div>
-    );
-  }
+  const onSubmit = () => setIsMessageSent(true);
 
-  // Remove the colon from the id
-  const idNumber = parseInt(id.substring(1));
-  const house = housesData.find((house) => house.id === idNumber);
+  useEffect(() => {
+    setIsMessageSent(false);
+  }, [currentHouseId]);
 
-  if (!house) {
-    return (
-      <div className="text-center text-3xl text-gray-400 mt-48">No house</div>
-    );
-  }
+  ////// HANDLE FAV  //////
 
-  const [isInterested, setIsInterested] = useState(() => {
-    return housesInterestedIn.some(
-      (housesInterestedIn) => housesInterestedIn.id === house.id
-    );
-  });
-
-  const onSubmit = () => {
-    if (isMessageSent) return;
-
-    reset();
-    setIsMessageSent(true);
-  };
-
-  const handleInterested = () => {
-    const isInterested = housesInterestedIn.some(
-      (housesInterestedIn) => housesInterestedIn.id === house.id
+  useEffect(() => {
+    const isAFavHouse: boolean = favHouses.some(
+      (favHouse) => favHouse.id === currentHouseId
     );
 
-    if (!isInterested) {
-      setHousesInterestIn((prevState) => [...prevState, house]);
+    setIsAFavHouse(isAFavHouse);
+  }, [currentHouseId]);
+
+  const handleFav = () => {
+    const isAFavHouse = favHouses.some(
+      (favHouse) => favHouse.id == currentHouseId
+    );
+
+    if (!isAFavHouse) {
+      setFavHouses((prevState) => [...prevState, house]);
     } else {
-      setHousesInterestIn((prevState) =>
-        prevState.filter(
-          (houseInterestedIn) => houseInterestedIn.id !== house.id
-        )
+      setFavHouses((prevState) =>
+        prevState.filter((favHouse) => favHouse.id !== house.id)
       );
     }
 
-    setIsInterested((prevState) => !prevState);
+    setIsAFavHouse((prevState) => !prevState);
   };
 
   return (
@@ -108,14 +111,14 @@ const PropertyDetails = (): JSX.Element => {
 
             {currentUser && (
               <>
-                {!isInterested ? (
+                {!isAFavHouse ? (
                   <AiOutlineStar
-                    onClick={handleInterested}
+                    onClick={handleFav}
                     className="text-yellow-500 text-4xl cursor-pointer"
                   />
                 ) : (
                   <AiFillStar
-                    onClick={handleInterested}
+                    onClick={handleFav}
                     className="text-yellow-500 text-4xl cursor-pointer"
                   />
                 )}
@@ -128,11 +131,11 @@ const PropertyDetails = (): JSX.Element => {
         <div className="flex flex-col items-start gap-8 lg:flex-row">
           {/* House */}
           <div className="max-w-[768px]">
-            <div className="mb-8">
+            <div className="mb-8 overflow-hidden">
               <img
                 src={house.imageLg}
                 alt={house.name}
-                className="rounded-lg"
+                className="w-full bject-cover rounded-lg"
               />
             </div>
             <div className="flex items-center gap-x-6 text-blue-600 mb-6">
@@ -213,12 +216,63 @@ const PropertyDetails = (): JSX.Element => {
                   Send message
                 </button>
               ) : (
-                <div className="bg-green-500  text-white text-md text-center rounded p-4  w-full transition">
-                  Message sent succesfully!
+                <div>
+                  <div className="text-green-500 text-lg text-center rounded mb-4  w-full transition">
+                    Message sent succesfully!
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMessageSent(false);
+                      reset();
+                    }}
+                    className="bg-blue-600 hover:bg-blue-800 text-white rounded p-4 text-sm w-full transition"
+                  >
+                    Send a new message
+                  </button>
                 </div>
               )}
             </form>
           </div>
+        </div>
+
+        {/* Rows */}
+        <div className="flex justify-center gap-20">
+          <Link
+            to={
+              currentHouseId !== 1
+                ? `/property/:${currentHouseId - 1}`
+                : `/property/:${currentHouseId}`
+            }
+            className={`${currentHouseId === 1 && "cursor-default"}`}
+          >
+            <BsFillArrowLeftCircleFill
+              className={`text-5xl shadow-1 rounded-full ${
+                currentHouseId !== 1
+                  ? "text-gray-200 hover:text-gray-300"
+                  : "text-gray-100"
+              } `}
+            />
+          </Link>
+
+          <Link
+            to={
+              currentHouseId !== housesData.length
+                ? `/property/:${currentHouseId + 1}`
+                : `/property/:${currentHouseId}`
+            }
+            className={`${
+              currentHouseId === housesData.length && "cursor-default"
+            }`}
+          >
+            <BsFillArrowRightCircleFill
+              className={`text-5xl shadow-1 rounded-full ${
+                currentHouseId !== housesData.length
+                  ? "text-gray-200 hover:text-gray-300"
+                  : "text-gray-100"
+              } `}
+            />
+          </Link>
         </div>
       </div>
     </section>

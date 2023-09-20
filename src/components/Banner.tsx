@@ -14,7 +14,7 @@ const Banner: React.FC = () => {
           <h2 className="text-4xl lg:text-[58px] font-semibold leading-none">
             <span className="text-blue-600">Rent</span> Your Dream House
           </h2>
-          <p className="max-w-[480px] my-2 text-2xl">
+          <p className="max-w-[480px] my-2 text-2xl px-6 lg:px-0">
             Discover your perfect refuge. Book now and make your getaways
             unforgettable!
           </p>

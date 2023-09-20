@@ -1,5 +1,5 @@
 // Hooks
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 // Component
@@ -25,6 +25,8 @@ interface ISignUpData {
 }
 
 const SignUp: React.FC<ISignUpProps> = (props) => {
+  const [passwordsDontMatch, setPasswordDontMatch] = useState(false);
+
   // Context
   const { setRegisteredUsers } = useContext(UserContext) as IUserContext;
   const [_, setUserInfo] = useLocalStorage({ key: "USER" });
@@ -38,7 +40,7 @@ const SignUp: React.FC<ISignUpProps> = (props) => {
 
   const onSubmit = (data: ISignUpData) => {
     const passwordsMatch = data.password === data.confirmedPassword;
-    if (!passwordsMatch) return alert("Password don't match");
+    if (!passwordsMatch) return setPasswordDontMatch(true);
 
     const newUser: IUser = {
       name: data.name,
@@ -112,6 +114,12 @@ const SignUp: React.FC<ISignUpProps> = (props) => {
               register={register}
               errors={errors}
             />
+
+            {passwordsDontMatch && (
+              <span className="text-red-500 text-center">
+                Passwords don't match
+              </span>
+            )}
 
             <button
               type="submit"

@@ -8,9 +8,7 @@ import { getPriceFromNumber } from "../utils/getPriceFromNumber";
 import { IUserContext, UserContext } from "../context/User";
 // import { IHouse } from "../models/House";
 const UserProfile = (): JSX.Element => {
-  const { currentUser, housesInterestedIn } = useContext(
-    UserContext
-  ) as IUserContext;
+  const { currentUser, favHouses } = useContext(UserContext) as IUserContext;
 
   if (!currentUser)
     return (
@@ -31,31 +29,41 @@ const UserProfile = (): JSX.Element => {
         </div>
 
         {/* Favorite houses*/}
+
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Favorite houses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {housesInterestedIn.map((house) => (
-              <div
-                key={house.id}
-                className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-1 transition"
-              >
-                <Link to={`/property/:${house.id}`}>
-                  <img
-                    src={house.imageLg}
-                    alt={house.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="text-xl font-semibold mb-2">{house.name}</h3>
-                    <p className="text-gray-600">{house.address}</p>
-                    <div className="text-blue-600 font-semibold mt-2">
-                      {getPriceFromNumber(house.price)}
+          <h2 className="text-2xl font-semibold mb-4">Favorite houses:</h2>
+
+          {!favHouses.length ? (
+            <div className="text-center text-3xl text-gray-400 mt-48">
+              No houses found
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {favHouses.map((house) => (
+                <div
+                  key={house.id}
+                  className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-1 transition"
+                >
+                  <Link to={`/property/:${house.id}`}>
+                    <img
+                      src={house.imageLg}
+                      alt={house.name}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">
+                        {house.name}
+                      </h3>
+                      <p className="text-gray-600">{house.address}</p>
+                      <div className="text-blue-600 font-semibold mt-2">
+                        {getPriceFromNumber(house.price)}
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
