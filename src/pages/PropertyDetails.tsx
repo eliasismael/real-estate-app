@@ -1,5 +1,5 @@
 // Hooks
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 // Icons
@@ -45,11 +45,33 @@ const PropertyDetails: React.FC = () => {
   ////// URL & CURRENT HOUSE //////
   const { id } = useParams();
   if (!id) return <Error />;
+
+  const previousPageLink = useRef<HTMLAnchorElement | null>(null);
+  const nextPageLink = useRef<HTMLAnchorElement | null>(null);
+
   // Remove colon from id and get an integer (":1" => 1)
   const currentHouseId = parseInt(id.substring(1)) || 0;
-
   const house = housesData.find((house) => house.id === currentHouseId);
   if (!house) return <Error />;
+
+  // Change house whit key rows
+  useEffect(() => {
+    console.log(currentHouseId);
+    const handleRowPressed = (evt: KeyboardEvent) => {
+      if (evt.key === "ArrowLeft" && currentHouseId > 1) {
+        previousPageLink.current?.click();
+      } else if (
+        evt.key === "ArrowRight" &&
+        currentHouseId < housesData.length
+      ) {
+        nextPageLink.current?.click();
+      }
+    };
+
+    document.addEventListener("keydown", handleRowPressed);
+
+    return () => document.removeEventListener("keydown", handleRowPressed);
+  }, [currentHouseId]);
 
   ////// FORM //////
   const {
@@ -128,32 +150,36 @@ const PropertyDetails: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="flex flex-col items-start gap-8 lg:flex-row">
+        <div className="flex flex-col items-start gap-8 lg:flex-row ">
           {/* House */}
-          <div className="max-w-[768px]">
-            <div className="mb-8 overflow-hidden">
+          <div className="max-w-[768px] relative  flex flex-col justify-center items-center">
+            <div className="mb-8 overflow-hidden w-full ">
               <img
                 src={house.imageLg}
                 alt={house.name}
-                className="w-full bject-cover rounded-lg"
+                className="object-cover rounded-lg"
               />
             </div>
-            <div className="flex items-center gap-x-6 text-blue-600 mb-6">
-              <div className="flex gap-x-2 items-center">
-                <BiBed className="text-4xl" />
-                <div>{house.bedrooms}</div>
-              </div>
-              <div className="flex gap-x-2 items-center">
-                <BiBath className="text-4xl" />
-                <div>{house.bathrooms}</div>
-              </div>
-              <div className="flex gap-x-2 items-center">
-                <BiArea className="text-4xl" />
-                <div>{house.surface}</div>
-              </div>
 
-              <div className="text-2xl font-semibold text-black bg-gray-200 rounded-full px-6 ml-auto">
-                {getPriceFromNumber(house.price)}
+            <div className="flex flex-col justify-between items-center gap-4 w-full lg:flex-row">
+              <div className="flex items-center justify-around lg:justify-start lg:gap-x-8 w-full text-blue-600 ">
+                <div className="flex gap-x-2 items-center">
+                  <BiBed className="text-md lg:text-xl" />
+                  <div className="text- lg:text-xl">{house.bedrooms}</div>
+                </div>
+                <div className="flex gap-x-2 items-center">
+                  <BiBath className="text-md lg:text-xl" />
+                  <div className="text-md lg:text-xl">{house.bathrooms}</div>
+                </div>
+                <div className="flex gap-x-2 items-center">
+                  <BiArea className="text-md lg:text-xl" />
+                  <div className="text-md lg:text-xl">{house.surface}</div>
+                </div>
+              </div>
+              <div className="w-full lg:w-auto">
+                <div className="text-lg lg:text-xl text-center font-semibold text-black bg-gray-100 rounded-lg mx-auto px-4 py-1">
+                  {getPriceFromNumber(house.price)}
+                </div>
               </div>
             </div>
           </div>
@@ -161,7 +187,7 @@ const PropertyDetails: React.FC = () => {
           {/* Agent */}
           <div className="flex-1 bg-white w-full mb-8 border border-gray-300 rounded-lg px-6 py-8 ">
             <div className="flex items-center gap-x-4 mb-8">
-              <div className="w-20 h-20 p-1 border border-gray-300 rounded-full">
+              <div className="w-1/5 h-auto sm:w-20 p-1 border border-gray-300 rounded-full">
                 <img src={house.agent.image} />
               </div>
               <div>
@@ -244,6 +270,7 @@ const PropertyDetails: React.FC = () => {
                 ? `/property/:${currentHouseId - 1}`
                 : `/property/:${currentHouseId}`
             }
+            ref={previousPageLink}
             className={`${currentHouseId === 1 && "cursor-default"}`}
           >
             <BsFillArrowLeftCircleFill
@@ -261,6 +288,7 @@ const PropertyDetails: React.FC = () => {
                 ? `/property/:${currentHouseId + 1}`
                 : `/property/:${currentHouseId}`
             }
+            ref={nextPageLink}
             className={`${
               currentHouseId === housesData.length && "cursor-default"
             }`}
